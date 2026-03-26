@@ -1,0 +1,147 @@
+body {
+    background-color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+.screen {
+    display: block;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+}
+
+main {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 10px;
+}
+
+article {
+    background-color: white;
+    padding: 15px;
+    margin-top: 10px;
+    border: 1px solid black;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0 20px 0;
+}
+
+button {
+    padding: 8px 12px;
+    margin: 5px 5px 5px 0;
+    cursor: pointer;
+}
+
+.admin {
+    border-left: 4px solid goldenrod;
+}
+
+.user {
+    border-left: 4px solid goldenrod;
+}
+
+/* LOGIN */
+#loginScreen {
+  background-image: url("https://uploads.onecompiler.io/44fxgfuc9/44fxgh6z5/UCF2.jpg");
+  background-size: cover;
+}
+
+#loginScreen h1,
+#loginScreen h2 {
+  color: goldenrod;
+  background-color: black;
+  padding: 5px;
+}
+
+#loginScreen h1 {
+  margin: 0 25%;
+}
+
+#loginScreen h2 {
+  margin: 0 40%;
+}
+
+#loginScreen input {
+  background-color: lightgrey;
+}
+
+/* ADMIN */
+#adminDashboard {
+  background-image: url("https://uploads.onecompiler.io/44fxgfuc9/44fxgh6z5/UCF.jpg");
+  background-size: cover;
+}
+
+#adminDashboard h3 {
+  color: goldenrod;
+  background-color: black;
+  margin: 0 40%;
+  padding: 5px;
+}
+
+#adminDashboard article {
+  background-color: black;
+}
+
+/* 🔥 FIX: make text visible */
+#adminDashboard article p {
+  color: goldenrod;
+}
+
+#adminDashboard button {
+  background-color: goldenrod;
+  color: black;
+}
+
+/* USER */
+#userDashboard {
+  background-image: url("https://uploads.onecompiler.io/44fxgfuc9/44fxgh6z5/UCF.jpg");
+  background-size: cover;
+}
+
+#userDashboard h3 {
+  color: goldenrod;
+  background-color: black;
+  margin: auto;
+  padding: 5px;
+}
+
+#userDashboard article {
+  background-color: black;
+}
+
+#userDashboard p {
+  color: goldenrod;
+}
+
+#userDashboard button {
+  background-color: goldenrod;
+  color: black;
+}
+
+/* REGISTER */
+#registerScreen {
+  background-image: url("https://uploads.onecompiler.io/44fxgfuc9/44fxgh6z5/UCF2.jpg");
+  background-size: cover;
+}
+
+#registerScreen h2 {
+  color: goldenrod;
+  background-color: black;
+  margin: 0 30%;
+  padding: 5px;
+}
+
+#registerScreen input {
+  background-color: lightgrey;
+}
