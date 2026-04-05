@@ -16,20 +16,26 @@ function App() {
     garageI: 0
   });
 
+  // ================= GARAGE COLOR LOGIC =================
+  function getGarageColor(spots){
+    if(spots >= 50) return "green";
+    if(spots >= 20) return "yellow";
+    return "red";
+  }
+
   // ================= LOGIN =================
   function login() {
     let u = document.getElementById("username").value;
     let p = document.getElementById("userPass").value;
 
-    if(u === "admin"){
-      setScreen("admin");
-      return;
-    }
-
     let found = users.find(user => user.username === u && user.password === p);
 
     if(found){
-      setScreen("user");
+      if(found.role === "admin"){
+        setScreen("admin");
+      } else {
+        setScreen("user");
+      }
     } else {
       alert("User not found");
     }
@@ -39,13 +45,14 @@ function App() {
   function createUser(){
     let u = document.getElementById("createUsername").value;
     let p = document.getElementById("createPass").value;
+    let r = document.getElementById("roleSelect").value;
 
     if(users.some(user => user.username === u)){
       alert("Duplicate username");
       return;
     }
 
-    setUsers([...users, { username: u, password: p }]);
+    setUsers([...users, { username: u, password: p, role: r }]);
     setScreen("login");
   }
 
@@ -127,6 +134,12 @@ function App() {
                 <label>Password</label>
                 <input id="createPass" type="password"/>
 
+                <label>Account Type</label>
+                <select id="roleSelect">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+
                 <button onClick={createUser}>Create</button>
                 <button onClick={() => setScreen("login")}>Back</button>
               </article>
@@ -156,8 +169,8 @@ function App() {
               <h3>Garages</h3>
               <article className="admin">
                 {Object.keys(garages).map(g => (
-                  <p key={g}>
-                    {g.replace("garage", "Garage ")}
+                  <p key={g} style={{ color: getGarageColor(garages[g]) }}>
+                    {g.replace("garage", "Garage ")} – {garages[g]} spots
                   </p>
                 ))}
               </article>
@@ -185,8 +198,8 @@ function App() {
               <article className="user">
 
                 {Object.keys(garages).map(g => (
-                  <p key={g}>
-                    {g.replace("garage", "Garage ")}
+                  <p key={g} style={{ color: getGarageColor(garages[g]) }}>
+                    {g.replace("garage", "Garage ")} – {garages[g]} spots
                   </p>
                 ))}
 
@@ -206,7 +219,6 @@ function App() {
                 </select>
 
                 {favorites.length === 0 && <p>No favorites yet</p>}
-
                 {favorites.map(f => <p key={f}>{f}</p>)}
 
                 <button onClick={addFavorite}>Add Favorite</button>
