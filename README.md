@@ -1,3 +1,86 @@
+UCF Capital Garage
+
+This server is meant to make finding parking on campus easier for students. It includes real-time status updates and allows users to favorite garages.
+
+What this project includes
+- Login and registration for users
+- 2 user roles: admin and driver
+- Admin CRUD for garages
+- Admin can change garage availability
+- Drivers can read garage data
+- Drivers can add and remove favorites
+- Activity log collection
+- Seed data with 4 garages and 3 users
+
+The 5 MongoDB collections used
+- users
+- garages
+- admins
+- favorites
+- activity logs
+
+Many-to-many relationship
+- users <-> garages through favorites
+A user can favorite many garages, and one garage can be favorited by many users.
+
+How to run the backend
+PORT=5001
+Mongo URI=mongodb+srv://cis4004User:FinalProject!@webit-final.phhx94t.mongodb.net/?appName=WebIT-final
+1. Open a terminal in the project folder
+2. Run: npm install (make sure the .env file is in the same folder as server.js)
+3. Run: node server.js
+
+Demo authentication for class demo
+This project uses a simple x-user header for protected routes.
+Examples:
+- x-user: admin1
+- x-user: student1
+- x-user: student2
+
+Seeded users
+- admin1 / Knights2026!
+- student1 / Knights2026!
+- student2 / Knights2026!
+
+Main endpoints
+Users
+- POST /api/users/register
+- POST /api/users/login
+- GET /api/users/me
+- PUT /api/users/me
+- DELETE /api/users/me
+- GET /api/users                (admin)
+- PUT /api/users/:id            (admin)
+- DELETE /api/users/:id         (admin)
+
+Garages
+- GET /api/garages
+- GET /api/garages/:id
+- GET /api/garages/admin/summary         (admin)
+- POST /api/garages                      (admin)
+- PUT /api/garages/:id                   (admin)
+- PATCH /api/garages/:id/availability    (admin)
+- DELETE /api/garages/:id                (admin)
+
+Favorites
+- GET /api/favorites
+- POST /api/favorites
+- DELETE /api/favorites/:id
+
+Comments
+- GET /api/comments/garage/:garageId
+- POST /api/comments
+- DELETE /api/comments/:id
+
+Activity logs
+- GET /api/activity-logs/me
+- GET /api/activity-logs      (admin)
+
+How to Run frontend
+1. Open a terminal in the project folder
+2. Run: npm start
+3. A link will open in the terminal and you can click it to open the website
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
