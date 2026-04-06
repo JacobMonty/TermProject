@@ -5,7 +5,10 @@ function App() {
 
   const [screen, setScreen] = useState("login");
   const [users, setUsers] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [logs, setLogs] = useState([]);
+
+  const [garageStatusOverrides, setGarageStatusOverrides] = useState({}); // NEW
 
   const [garages, setGarages] = useState({
     garageA: 70,
@@ -16,11 +19,26 @@ function App() {
     garageI: 0
   });
 
-  // ================= GARAGE COLOR LOGIC =================
-  function getGarageColor(spots){
-    if(spots >= 50) return "green";
-    if(spots >= 20) return "yellow";
-    return "red";
+  // ================= STATUS LOGIC =================
+  function getGarageStatus(key, spots){
+
+    // CHECK OVERRIDE FIRST
+    if(garageStatusOverrides[key]){
+      const status = garageStatusOverrides[key];
+
+      if(status === "empty") return { color: "limegreen", text: "Empty" };
+      if(status === "limited") return { color: "goldenrod", text: "Limited" };
+      if(status === "full") return { color: "red", text: "Full" };
+    }
+
+    // DEFAULT AUTO LOGIC
+    if(spots > 50){
+      return { color: "limegreen", text: "Empty" };
+    } else if(spots > 10){
+      return { color: "goldenrod", text: "Limited" };
+    } else {
+      return { color: "red", text: "Full" };
+    }
   }
 
   // ================= LOGIN =================
@@ -31,6 +49,8 @@ function App() {
     let found = users.find(user => user.username === u && user.password === p);
 
     if(found){
+      setCurrentUser(found);
+
       if(found.role === "admin"){
         setScreen("admin");
       } else {
@@ -52,7 +72,11 @@ function App() {
       return;
     }
 
-    setUsers([...users, { username: u, password: p, role: r }]);
+    setUsers([
+      ...users,
+      { username: u, password: p, role: r, favorites: [] }
+    ]);
+
     setScreen("login");
   }
 
@@ -67,27 +91,79 @@ function App() {
       ...garages,
       [key]: 50
     });
+
+    setLogs([...logs, `${currentUser.username} created ${key}`]);
   }
 
   function deleteGarage(){
     let key = prompt("Enter key like garageA");
+
     let copy = {...garages};
     delete copy[key];
     setGarages(copy);
+
+    setLogs([...logs, `${currentUser.username} deleted ${key}`]);
+  }
+
+  // ================= ADMIN STATUS CHANGE =================
+  function updateGarageStatus(key, newStatus){
+    setGarageStatusOverrides({
+      ...garageStatusOverrides,
+      [key]: newStatus
+    });
+
+    setLogs([...logs, `${currentUser.username} set ${key} to ${newStatus}`]);
   }
 
   // ================= FAVORITES =================
   function addFavorite(){
     let g = document.getElementById("garageSelect").value;
 
-    if(!favorites.includes(g)){
-      setFavorites([...favorites, g]);
+    if(!currentUser.favorites.includes(g)){
+
+      const updatedUsers = users.map(user => {
+        if(user.username === currentUser.username){
+          return {
+            ...user,
+            favorites: [...user.favorites, g]
+          };
+        }
+        return user;
+      });
+
+      setUsers(updatedUsers);
+
+      const updatedCurrent = updatedUsers.find(u => u.username === currentUser.username);
+      setCurrentUser(updatedCurrent);
+
+      setLogs([...logs, `${currentUser.username} added favorite ${g}`]);
     }
   }
 
   function removeFavorite(){
     let g = prompt("Garage to remove");
-    setFavorites(favorites.filter(f => f !== g));
+
+    const updatedUsers = users.map(user => {
+      if(user.username === currentUser.username){
+        return {
+          ...user,
+          favorites: user.favorites.filter(f => f !== g)
+        };
+      }
+      return user;
+    });
+
+    setUsers(updatedUsers);
+
+    const updatedCurrent = updatedUsers.find(u => u.username === currentUser.username);
+    setCurrentUser(updatedCurrent);
+
+    setLogs([...logs, `${currentUser.username} removed favorite ${g}`]);
+  }
+
+  function logout(){
+    setCurrentUser(null);
+    setScreen("login");
   }
 
   return (
@@ -168,16 +244,40 @@ function App() {
             <section>
               <h3>Garages</h3>
               <article className="admin">
-                {Object.keys(garages).map(g => (
-                  <p key={g} style={{ color: getGarageColor(garages[g]) }}>
-                    {g.replace("garage", "Garage ")} – {garages[g]} spots
-                  </p>
+                {Object.keys(garages).map(g => {
+                  const status = getGarageStatus(g, garages[g]);
+
+                  return (
+                    <div key={g}>
+                      <p style={{ color: status.color }}>
+                        {g.replace("garage", "Garage ")} — {status.text}
+                      </p>
+
+                      {/* ADMIN CONTROL */}
+                      <select onChange={(e) => updateGarageStatus(g, e.target.value)}>
+                        <option value="">Auto</option>
+                        <option value="empty">Empty</option>
+                        <option value="limited">Limited</option>
+                        <option value="full">Full</option>
+                      </select>
+                    </div>
+                  );
+                })}
+              </article>
+            </section>
+
+            <section>
+              <h3>Activity Logs</h3>
+              <article className="admin">
+                {logs.length === 0 && <p>No activity yet</p>}
+                {logs.map((log, i) => (
+                  <p key={i}>{log}</p>
                 ))}
               </article>
             </section>
 
             <section>
-              <button onClick={() => setScreen("login")}>Logout</button>
+              <button onClick={logout}>Logout</button>
             </section>
 
           </main>
@@ -185,7 +285,7 @@ function App() {
       )}
 
       {/* USER DASHBOARD */}
-      {screen === "user" && (
+      {screen === "user" && currentUser && (
         <section className="screen" id="userDashboard">
           <header>
             <h2>Student Dashboard</h2>
@@ -196,13 +296,14 @@ function App() {
             <section>
               <h3>Garage Availability</h3>
               <article className="user">
-
-                {Object.keys(garages).map(g => (
-                  <p key={g} style={{ color: getGarageColor(garages[g]) }}>
-                    {g.replace("garage", "Garage ")} – {garages[g]} spots
-                  </p>
-                ))}
-
+                {Object.keys(garages).map(g => {
+                  const status = getGarageStatus(g, garages[g]);
+                  return (
+                    <p key={g} style={{ color: status.color }}>
+                      {g.replace("garage", "Garage ")} — {status.text}
+                    </p>
+                  );
+                })}
               </article>
             </section>
 
@@ -218,8 +319,11 @@ function App() {
                   ))}
                 </select>
 
-                {favorites.length === 0 && <p>No favorites yet</p>}
-                {favorites.map(f => <p key={f}>{f}</p>)}
+                {currentUser.favorites.length === 0 && <p>No favorites yet</p>}
+
+                {currentUser.favorites.map(f => (
+                  <p key={f}>{f}</p>
+                ))}
 
                 <button onClick={addFavorite}>Add Favorite</button>
                 <button onClick={removeFavorite}>Remove Favorite</button>
@@ -228,7 +332,7 @@ function App() {
             </section>
 
             <section>
-              <button onClick={() => setScreen("login")}>Logout</button>
+              <button onClick={logout}>Logout</button>
             </section>
 
           </main>
