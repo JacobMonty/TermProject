@@ -80,6 +80,12 @@ How to Run frontend
 1. Open a terminal in the project folder
 2. Run: npm start
 3. A link will open in the terminal and you can click it to open the website
+4. You will have to create a new user for both admin and regular user
+5. Hit Create User and create a new user for both admin and regular user
+6. Login as a user and favorite a garage
+7. Logout as a regular user and login as an admin
+8. Create a new garage and set the filling requirements to auto
+9. logout of admin and backin as a user and see the changes made.
 
 # Getting Started with Create React App
 
